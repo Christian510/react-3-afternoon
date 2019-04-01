@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
 import './App.css';
-
+import Post from './Post/Post.js';
 import Header from './Header/Header';
 import Compose from './Compose/Compose';
+import axios from 'axios';
 
 class App extends Component {
   constructor() {
@@ -19,19 +20,61 @@ class App extends Component {
   }
   
   componentDidMount() {
-
+    axios.get('https://practiceapi.devmountain.com/api/posts')
+      .then(res => {
+        console.log("===== Success! ======");
+        this.setState({
+          posts: res.data
+        })
+      })
+      .catch(err =>{
+        console.log( "====== Failure =====" );
+        console.log( err );
+      })
   }
 
-  updatePost() {
-  
+  updatePost(id, text) {
+    axios.put(`https://practiceapi.devmountain.com/api/posts?id=${id}`, {text})
+    .then(res => {
+      console.log("==== PUT Success! =====");
+      this.setState({
+      posts: res.data
+      });
+
+    })
+    .catch(err =>{
+      console.log( "===== PUT Fialure ====" );
+      console.log(err);
+    })
   }
 
-  deletePost() {
-
+  deletePost(id) {
+    axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${ id }`)
+    .then( res => {
+      console.log("======= Delete Success! =======");
+      this.setState({
+        posts: res.data
+      });
+    })
+    .catch(err =>{
+      console.log( "====== Delete Failure ======" );
+      console.log(err);
+    })
   }
 
-  createPost() {
+  createPost(text) {
+    axios.post('https://practiceapi.devmountain.com/api/posts', { text })
+    .then(res => {
+      console.log("==== Post Success! =====");
+      this.setState({
+      posts: res.data
+      });
 
+    })
+    .catch(err =>{
+      console.log( "===== Post Fialure ====" );
+      console.log(err);
+    })
   }
 
   render() {
@@ -43,8 +86,18 @@ class App extends Component {
 
         <section className="App__content">
 
-          <Compose />
-          
+          <Compose createPostFn={ this.createPost } />
+          {
+            posts.map( post => ( 
+              <Post key={ post.id }
+                    text={ post.text }
+                    date={ post.date }
+                    id={ post.id }
+                    updatePostFn={ this.updatePost }
+                    deletePostFn={ this.deletePost }
+                     />
+            ))
+          }
         </section>
       </div>
     );
