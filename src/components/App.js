@@ -7,8 +7,8 @@ import Compose from './Compose/Compose';
 import axios from 'axios';
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       posts: []
@@ -17,18 +17,19 @@ class App extends Component {
     this.updatePost = this.updatePost.bind( this );
     this.deletePost = this.deletePost.bind( this );
     this.createPost = this.createPost.bind( this );
+    this.searchPost = this.searchPost.bind( this );
   }
   
   componentDidMount() {
     axios.get('https://practiceapi.devmountain.com/api/posts')
       .then(res => {
-        console.log("===== Success! ======");
+        console.log("===== Success! =====");
         this.setState({
           posts: res.data
         })
       })
       .catch(err =>{
-        console.log( "====== Failure =====" );
+        console.log( "===== Failure =====" );
         console.log( err );
       })
   }
@@ -36,14 +37,14 @@ class App extends Component {
   updatePost(id, text) {
     axios.put(`https://practiceapi.devmountain.com/api/posts?id=${id}`, {text})
     .then(res => {
-      console.log("==== PUT Success! =====");
+      console.log("===== PUT Success! =====");
       this.setState({
       posts: res.data
       });
 
     })
     .catch(err =>{
-      console.log( "===== PUT Fialure ====" );
+      console.log( "===== PUT Fialure =====" );
       console.log(err);
     })
   }
@@ -51,7 +52,7 @@ class App extends Component {
   deletePost(id) {
     axios.delete(`https://practiceapi.devmountain.com/api/posts?id=${ id }`)
     .then( res => {
-      console.log("======= Delete Success! =======");
+      console.log("====== Delete Success! ======");
       this.setState({
         posts: res.data
       });
@@ -65,24 +66,39 @@ class App extends Component {
   createPost(text) {
     axios.post('https://practiceapi.devmountain.com/api/posts', { text })
     .then(res => {
-      console.log("==== Post Success! =====");
+      console.log("===== Post Success! =====");
       this.setState({
       posts: res.data
       });
 
     })
     .catch(err =>{
-      console.log( "===== Post Fialure ====" );
+      console.log( "===== Post Fialure =====" );
       console.log(err);
-    })
+    });
+  }
+
+    searchPost(text) {
+
+      axios.get(`https://practiceapi.devmountain.com/api/posts/filter?text=${ text }`)
+      .then(res => {
+        console.log("===== Search Success! =====");
+        this.setState({
+        posts: res.data
+        });
+      })
+      .catch(err =>{
+        console.log( "===== Post Fialure =====" );
+        console.log(err);
+      });
+
   }
 
   render() {
     const { posts } = this.state;
-
     return (
       <div className="App__parent">
-        <Header />
+        <Header searchPostFn={ this.searchPost }/>
 
         <section className="App__content">
 
